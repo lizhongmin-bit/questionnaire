@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     dwz_token: str | None = None
     dwz_term: str = "long-term"
     dwz_api_base: str = "https://dwz.cn"
+    dwz_ssl_verify: bool = True
+    dwz_ca_file: str | None = None
     export_links_format: str = "xlsx"
 
     class Config:

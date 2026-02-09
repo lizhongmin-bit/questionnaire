@@ -125,6 +125,8 @@ def admin_export_links(
                 settings.dwz_token,
                 settings.dwz_term,
                 settings.dwz_api_base,
+                settings.dwz_ssl_verify,
+                settings.dwz_ca_file,
             )
         except Exception as exc:
             raise HTTPException(status_code=502, detail=f"短网址生成失败: {exc}") from exc
