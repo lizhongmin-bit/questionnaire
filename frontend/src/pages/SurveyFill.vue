@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="card">
-      <div v-if="!success" :class="['card-header', submitted ? 'logo-left' : 'logo-right']">
+      <div :class="['card-header', submitted ? 'logo-left' : 'logo-right']">
         <div class="brand-logo">
           <img :src="logoUrl" alt="品牌Logo" />
         </div>
@@ -45,14 +45,6 @@
         <div class="footer-submit">
           <button class="btn-primary" @click="submit">提交</button>
           <div v-if="error" class="error">{{ error }}</div>
-          <div v-if="success" class="success-panel">
-            <div class="submitted-icon">✓</div>
-            <div class="submitted-title">提交成功，感谢您的参与！</div>
-            <div class="qr-block">
-              <img :src="qrUrl" alt="问卷二维码" class="qr-image" />
-              <div class="notice">如需进一步了解车旺大卡或咨询入驻事宜，请扫码添加工作人员微信。</div>
-            </div>
-          </div>
         </div>
       </template>
     </div>
@@ -68,7 +60,6 @@ const route = useRoute()
 const survey = reactive({ title: '', description: '', questions: [] })
 const answers = reactive({})
 const error = ref('')
-const success = ref(false)
 const submitted = ref(false)
 const qrUrl = 'https://cwdk-s3.sinoiov.com/api/urlBrowse/cwdk-old/newapp/front/9ba003b3a2364b25b6edcfc6444f47ad.png'
 const logoUrl = 'https://cwdk-s3.sinoiov.com/api/urlBrowse/cwdk-old/newapp/front/5a41726fb02f4fef804ccc61ca990411.png'
@@ -85,7 +76,6 @@ const loadSurvey = async () => {
 
 const submit = async () => {
   error.value = ''
-  success.value = false
   for (const q of survey.questions) {
     if (q.required && !answers[q.id]) {
       error.value = '请填写所有必答题'
@@ -106,7 +96,7 @@ const submit = async () => {
       method: 'POST',
       body: JSON.stringify(payload)
     })
-    success.value = true
+    submitted.value = true
   } catch (err) {
     error.value = '提交失败，请稍后再试'
   }
