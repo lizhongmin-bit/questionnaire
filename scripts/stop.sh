@@ -23,4 +23,3 @@ stop_pid() {
 }
 
 stop_pid "后端" "$LOG_DIR/backend.pid"
-stop_pid "前端" "$LOG_DIR/frontend.pid"
