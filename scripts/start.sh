@@ -18,6 +18,7 @@ setsid bash -lc "cd '$ROOT_DIR/backend' && \
   uvicorn app.main:app --reload --host 0.0.0.0 --port 8008" \
   > "$LOG_DIR/backend.log" 2>&1 &
 echo $! > "$LOG_DIR/backend.pid"
+echo $! > "$LOG_DIR/backend.pgid"
 disown
 
 echo "后端日志: $LOG_DIR/backend.log"

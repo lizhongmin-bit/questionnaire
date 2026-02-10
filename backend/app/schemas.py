@@ -20,6 +20,7 @@ class SurveyCreate(BaseModel):
     title: str
     description: Optional[str] = None
     status: str = "draft"
+    link_template: Optional[str] = None
     questions: List[QuestionCreate] = Field(default_factory=list)
 
 
@@ -49,6 +50,7 @@ class SurveyOut(BaseModel):
     title: str
     description: Optional[str]
     status: str
+    link_template: Optional[str] = None
     created_at: datetime
     questions: List[QuestionOut] = []
 

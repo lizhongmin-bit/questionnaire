@@ -9,7 +9,7 @@ class Settings(BaseSettings):
         "?charset=utf8mb4"
     )
     admin_user: str = "admin"
-    admin_password: str = "admin123"
+    admin_password: str = "dk2026#C"
     admin_token: str = "dev-admin-token"
     allow_resubmit: bool = False
     public_base_url: str = "http://localhost:5173"

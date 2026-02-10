@@ -6,6 +6,7 @@ CREATE TABLE IF NOT EXISTS surveys (
   title VARCHAR(255) NOT NULL,
   description TEXT,
   status VARCHAR(32) DEFAULT 'draft',
+  link_template TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

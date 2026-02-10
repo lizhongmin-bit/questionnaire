@@ -21,6 +21,7 @@ class Survey(Base):
     title = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     status = Column(String(32), default="draft")
+    link_template = Column(Text, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     questions = relationship(
@@ -45,7 +46,12 @@ class Question(Base):
     options = relationship(
         "Option", back_populates="question", cascade="all, delete-orphan", order_by="Option.sort_order"
     )
-    answers = relationship("Answer", back_populates="question")
+    answers = relationship(
+        "Answer",
+        back_populates="question",
+        cascade="all, delete-orphan",
+        passive_deletes=True,
+    )
 
 
 class Option(Base):
@@ -53,7 +59,7 @@ class Option(Base):
     __table_args__ = {"mysql_charset": "utf8mb4", "mysql_collate": "utf8mb4_unicode_ci"}
 
     id = Column(Integer, primary_key=True)
-    question_id = Column(Integer, ForeignKey("questions.id"), nullable=False)
+    question_id = Column(Integer, ForeignKey("questions.id", ondelete="CASCADE"), nullable=False)
     text = Column(String(255), nullable=False)
     sort_order = Column(Integer, default=0)
 

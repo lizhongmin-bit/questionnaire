@@ -10,6 +10,7 @@ def create_survey(db: Session, payload: schemas.SurveyCreate) -> models.Survey:
         title=payload.title,
         description=payload.description,
         status=payload.status,
+        link_template=payload.link_template,
     )
     for q in payload.questions:
         question = models.Question(
@@ -31,6 +32,7 @@ def update_survey(db: Session, survey: models.Survey, payload: schemas.SurveyCre
     survey.title = payload.title
     survey.description = payload.description
     survey.status = payload.status
+    survey.link_template = payload.link_template
     survey.questions.clear()
     for q in payload.questions:
         question = models.Question(

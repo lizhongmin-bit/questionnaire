@@ -44,6 +44,8 @@ def admin_list_surveys(db: Session = Depends(get_db)):
 
 @app.post("/api/admin/surveys", response_model=schemas.SurveyOut, dependencies=[Depends(require_admin)])
 def admin_create_survey(payload: schemas.SurveyCreate, db: Session = Depends(get_db)):
+    if payload.link_template and "${link}" not in payload.link_template:
+        raise HTTPException(status_code=400, detail="链接模板必须包含 ${link}")
     return crud.create_survey(db, payload)
 
 
@@ -57,6 +59,8 @@ def admin_get_survey(survey_id: int, db: Session = Depends(get_db)):
 
 @app.put("/api/admin/surveys/{survey_id}", response_model=schemas.SurveyOut, dependencies=[Depends(require_admin)])
 def admin_update_survey(survey_id: int, payload: schemas.SurveyCreate, db: Session = Depends(get_db)):
+    if payload.link_template and "${link}" not in payload.link_template:
+        raise HTTPException(status_code=400, detail="链接模板必须包含 ${link}")
     survey = crud.get_survey(db, survey_id)
     if not survey:
         raise HTTPException(status_code=404, detail="问卷不存在")
@@ -116,6 +120,8 @@ def admin_export_links(
         raise HTTPException(status_code=400, detail="public_base_url 必须以 http:// 或 https:// 开头")
     if not settings.dwz_token:
         raise HTTPException(status_code=500, detail="未配置 DWZ_TOKEN")
+    if not survey.link_template or "${link}" not in survey.link_template:
+        raise HTTPException(status_code=400, detail="请在问卷配置中设置包含 ${link} 的链接模板")
     rows = []
     for token in tokens:
         link = f"{base_url}/s/{token.public_token}"
@@ -130,7 +136,8 @@ def admin_export_links(
             )
         except Exception as exc:
             raise HTTPException(status_code=502, detail=f"短网址生成失败: {exc}") from exc
-        rows.append((token.real_id, short_url))
+        content = survey.link_template.replace("${link}", short_url)
+        rows.append((token.real_id, content))
     export_format = settings.export_links_format.lower().strip()
     timestamp = datetime.utcnow().strftime("%Y%m%d%H%M%S")
     safe_title = (survey.title or "问卷").replace("/", "-").replace("\\", "-")
