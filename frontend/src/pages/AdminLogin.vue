@@ -14,7 +14,6 @@
         </el-form-item>
       </el-form>
       <div v-if="error" class="error">{{ error }}</div>
-      <div class="notice" style="margin-top: 12px;">默认账号：admin / admin123</div>
     </div>
   </div>
 </template>
@@ -26,8 +25,8 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const form = reactive({
-  username: 'admin',
-  password: 'admin123'
+  username: '',
+  password: ''
 })
 const error = ref('')
 

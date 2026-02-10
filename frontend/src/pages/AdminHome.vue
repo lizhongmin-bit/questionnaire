@@ -45,6 +45,14 @@
             <el-form-item label="问卷描述">
               <el-input v-model="form.description" type="textarea" :rows="3" placeholder="请输入描述" />
             </el-form-item>
+            <el-form-item label="链接模板（必须包含 ${link}）">
+              <el-input
+                v-model="form.link_template"
+                type="textarea"
+                :rows="3"
+                placeholder="例如：请点击填写问卷：${link}"
+              />
+            </el-form-item>
             <el-form-item label="状态">
               <el-select v-model="form.status" placeholder="请选择">
                 <el-option label="草稿" value="draft" />
@@ -163,6 +171,7 @@ const form = reactive({
   title: '',
   description: '',
   status: 'draft',
+  link_template: '',
   questions: []
 })
 
@@ -178,6 +187,7 @@ const newSurvey = () => {
   form.title = ''
   form.description = ''
   form.status = 'draft'
+  form.link_template = ''
   form.questions = []
 }
 
@@ -189,6 +199,7 @@ const loadSurvey = async (id) => {
   form.title = data.title
   form.description = data.description || ''
   form.status = data.status
+  form.link_template = data.link_template || ''
   form.questions = data.questions.map(q => ({
     title: q.title,
     description: q.description || '',
@@ -226,6 +237,7 @@ const saveSurvey = async () => {
     title: form.title,
     description: form.description,
     status: form.status,
+    link_template: form.link_template,
     questions: form.questions.map((q, idx) => ({
       title: q.title,
       description: q.description,
