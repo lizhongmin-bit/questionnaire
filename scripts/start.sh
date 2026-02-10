@@ -13,11 +13,12 @@ if [[ -f "$LOG_DIR/backend.pid" ]]; then
 fi
 
 echo "启动后端..."
-nohup bash -lc "cd '$ROOT_DIR/backend' && \
+setsid bash -lc "cd '$ROOT_DIR/backend' && \
   if [[ -f .venv/bin/activate ]]; then source .venv/bin/activate; fi; \
   uvicorn app.main:app --reload --host 0.0.0.0 --port 8008" \
   > "$LOG_DIR/backend.log" 2>&1 &
 echo $! > "$LOG_DIR/backend.pid"
+disown
 
 echo "后端日志: $LOG_DIR/backend.log"
 echo "模式: $MODE"
