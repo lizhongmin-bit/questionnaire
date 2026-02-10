@@ -32,3 +32,20 @@ stop_pid() {
 }
 
 stop_pid "后端" "$LOG_DIR/backend.pid" "$LOG_DIR/backend.pgid"
+
+if command -v lsof >/dev/null 2>&1; then
+  PIDS="$(lsof -t -i:8008 2>/dev/null | tr '\n' ' ')"
+  if [[ -n "$PIDS" ]]; then
+    echo "端口 8008 仍被占用，强制结束: $PIDS"
+    kill -TERM $PIDS || true
+  fi
+fi
+
+for _ in {1..10}; do
+  if command -v ss >/dev/null 2>&1; then
+    ss -lntp | grep -q ':8008' || break
+  else
+    break
+  fi
+  sleep 0.5
+done

@@ -17,8 +17,12 @@ setsid bash -lc "cd '$ROOT_DIR/backend' && \
   if [[ -f .venv/bin/activate ]]; then source .venv/bin/activate; fi; \
   uvicorn app.main:app --reload --host 0.0.0.0 --port 8008" \
   > "$LOG_DIR/backend.log" 2>&1 &
-echo $! > "$LOG_DIR/backend.pid"
-echo $! > "$LOG_DIR/backend.pgid"
+BACKEND_PID=$!
+echo "$BACKEND_PID" > "$LOG_DIR/backend.pid"
+BACKEND_PGID="$(ps -o pgid= "$BACKEND_PID" | tr -d ' ')"
+if [[ -n "$BACKEND_PGID" ]]; then
+  echo "$BACKEND_PGID" > "$LOG_DIR/backend.pgid"
+fi
 disown
 
 echo "后端日志: $LOG_DIR/backend.log"
