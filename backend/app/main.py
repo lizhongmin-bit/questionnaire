@@ -10,7 +10,8 @@ from . import crud, models, schemas
 from .db import Base, engine, settings
 from .deps import get_db, require_admin
 from .utils import excel
-from .utils.dwz import shorten_url
+from .utils.dwz import shorten_url as dwz_shorten_url
+from .utils.threewt import shorten_url as threewt_shorten_url
 
 app = FastAPI(title="定向调查问卷系统")
 
@@ -118,22 +119,36 @@ def admin_export_links(
     base_url = public_base_url or settings.public_base_url
     if not base_url.startswith(("http://", "https://")):
         raise HTTPException(status_code=400, detail="public_base_url 必须以 http:// 或 https:// 开头")
-    if not settings.dwz_token:
-        raise HTTPException(status_code=500, detail="未配置 DWZ_TOKEN")
+    provider = settings.shortener_provider.lower().strip()
+    if provider not in ("dwz", "threewt"):
+        raise HTTPException(status_code=500, detail="短网址通道配置错误")
     if not survey.link_template or "${link}" not in survey.link_template:
         raise HTTPException(status_code=400, detail="请在问卷配置中设置包含 ${link} 的链接模板")
     rows = []
     for token in tokens:
         link = f"{base_url}/s/{token.public_token}"
         try:
-            short_url = shorten_url(
-                link,
-                settings.dwz_token,
-                settings.dwz_term,
-                settings.dwz_api_base,
-                settings.dwz_ssl_verify,
-                settings.dwz_ca_file,
-            )
+            if provider == "dwz":
+                if not settings.dwz_token:
+                    raise HTTPException(status_code=500, detail="未配置 DWZ_TOKEN")
+                short_url = dwz_shorten_url(
+                    link,
+                    settings.dwz_token,
+                    settings.dwz_term,
+                    settings.dwz_api_base,
+                    settings.dwz_ssl_verify,
+                    settings.dwz_ca_file,
+                )
+            else:
+                if not settings.threewt_key:
+                    raise HTTPException(status_code=500, detail="未配置 THREEWT_KEY")
+                short_url = threewt_shorten_url(
+                    link,
+                    settings.threewt_key,
+                    settings.threewt_api_base,
+                    settings.threewt_domain,
+                    settings.threewt_expire_date,
+                )
         except Exception as exc:
             raise HTTPException(status_code=502, detail=f"短网址生成失败: {exc}") from exc
         content = survey.link_template.replace("${link}", short_url)

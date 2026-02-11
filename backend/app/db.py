@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     dwz_ssl_verify: bool = True
     dwz_ca_file: str | None = None
     export_links_format: str = "xlsx"
+    shortener_provider: str = "dwz"
+    threewt_key: str | None = None
+    threewt_api_base: str = "http://api.3wt.cn"
+    threewt_domain: str = "cw.95155.com"
+    threewt_expire_date: str | None = None
 
     class Config:
         env_file = ".env"
